@@ -1,4 +1,5 @@
 # BookBrain
+# github.com/ben-n93
 
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QDate, Qt, QObject
@@ -7,20 +8,18 @@ from datetime import date, datetime
 from copy import deepcopy
 import json
 
-# List of generated IDs
-entry_ids = list(range(1,10_001))
+entry_ids = list(range(1, 10_001))
 
 entries = {}
 
-# JSON filenames.
 entries_file = 'data/user_data.json'
 ids_file = 'data/IDs.json'
 
 genres = ['Biography', 'Comic', 'Crime', 'Detective', 'Fantasy',
-'Graphic novel', 'Historical fiction', 'History', 'Horror',
-'Literary fiction', 'Magic realism', 'Memoir', 'Mystery', 'Poetry', 'Romance',
-'Science fiction', 'Self-help', 'Short stories', 'Thriller', 'True crime',
-'Western']
+          'Graphic novel', 'Historical fiction', 'History', 'Horror',
+          'Literary fiction', 'Magic realism', 'Memoir', 'Mystery', 'Poetry',
+          'Romance', 'Science fiction', 'Self-help', 'Short stories',
+          'Thriller', 'True crime', 'Western']
 
 
 class MainWindow(QtWidgets.QWidget):
@@ -28,10 +27,10 @@ class MainWindow(QtWidgets.QWidget):
         super().__init__()
         self.setWindowTitle('BookBrain')
         self.setMinimumHeight(450)
-        self.setMinimumWidth(640)
+        self.setMinimumWidth(645)
         self.layout = QtWidgets.QGridLayout()
         self.setLayout(self.layout)
-        # Headers for QTableWidget
+        # Headers for QTableWidget.
         self.header_one = QtWidgets.QTableWidgetItem('ID:')
         self.header_two = QtWidgets.QTableWidgetItem('Date started:')
         self.header_three = QtWidgets.QTableWidgetItem('Date finished:')
@@ -39,7 +38,7 @@ class MainWindow(QtWidgets.QWidget):
         self.header_five = QtWidgets.QTableWidgetItem('Author:')
         self.header_six = QtWidgets.QTableWidgetItem('Genre:')
         self.header_seven = QtWidgets.QTableWidgetItem('Comments:')
-        # Table widget
+        # Table widget.
         self.table = QtWidgets.QTableWidget(1, 7)
         # Sets headers.
         self.table.setHorizontalHeaderItem(0, self.header_one)
@@ -70,22 +69,23 @@ class MainWindow(QtWidgets.QWidget):
         # values too small (due to date formatting default) to show column
         # header ('Date finished:') in full.
         self.table.setColumnWidth(2, 100)
-        # Signals/slots.
+
         self.add_book_button.clicked.connect(self.show_input_window)
         self.delete_book_button.clicked.connect(self.delete_entry)
         self.edit_book_button.clicked.connect(self.show_edit_window)
 
-        self.add_book_button.setFlat(True)
-
 
     def table_population(self):
+        """Populates the table in the main window with book entries."""
         # Disabled table sorting, so as not to mess with table items order.
         self.table.setSortingEnabled(False)
+
         entries_row_count = 0
         for key in entries.keys():
             entries_row_count += 1
+
         self.table.setRowCount(entries_row_count)
-        # Creates empty list.
+
         temp_list = []
         fields_list = ['ID', 'date_started', 'date_finished', 'book_title',
         'author_title', 'genre', 'comments']
@@ -186,7 +186,8 @@ class MainWindow(QtWidgets.QWidget):
 
                     # Deletes entry that matches row ID.
                     del entries[self.id_to_delete]
-                    # Converts ID to integer so it can be be readded to IDs list.
+                    # Converts ID to integer so it can be be readded to IDs
+                    # list.
                     self.id_to_delete = int(self.id_to_delete)
 
                     # Adds deleted ID to IDs list, to be reused again.
@@ -208,16 +209,14 @@ class MainWindow(QtWidgets.QWidget):
 
 
 class InputWindow(QtWidgets.QDialog):
-    """ Input window for adding/editing book entries """
+    """ Input window for adding/editing book entries. """
     def __init__(self, window_type, current_row_id=None):
         super().__init__()
         self.window_type = window_type
         self.current_row_id = current_row_id
         self.layout = QtWidgets.QFormLayout()
-        # Sets input window layout
         self.setLayout(self.layout)
-        # Sets input window title
-        # QLineLabels
+
         self.book_label = QtWidgets.QLabel('Book title:')
         self.author_label = QtWidgets.QLabel('Author:')
         self.genre_label = QtWidgets.QLabel('Genre:')
@@ -226,19 +225,20 @@ class InputWindow(QtWidgets.QDialog):
         self.comments_label = QtWidgets.QLabel('Comments:')
         self.currently_reading_label = QtWidgets.QLabel('Currently reading:')
         self.want_to_read_label = QtWidgets.QLabel('Want to read:')
-        # QCheckbox
+
         self.currently_reading_check_box = QtWidgets.QCheckBox('')
         self.want_to_read_check_box = QtWidgets.QCheckBox('')
-        # QLineEdits
+
         self.book_line_edit = QtWidgets.QLineEdit()
         self.author_line_edit = QtWidgets.QLineEdit()
-        # QComboBox
+
         self.genre_combo_box = QtWidgets.QComboBox()
         self.genre_combo_box.addItems(genres)
-        # QPlainTextEdit
+
         self.comments_text_box = QtWidgets.QPlainTextEdit()
         self.confirm_button = QtWidgets.QPushButton('Confirm')
-        # Date fields.
+
+        # Date formatting.
         self.today_date = date.today()
         self.date_object = QDate(self.today_date)
         # Finds current year, in order to set default Date started date as
@@ -256,9 +256,6 @@ class InputWindow(QtWidgets.QDialog):
         # Sets date display format
         self.date_started_date_edit.setDisplayFormat('d MMMM yyyy')
         self.date_finished_date_edit.setDisplayFormat('d MMMM yyyy')
-
-        self.test_min_date = QDate(2021,12,12)
-        self.date_finished_date_edit.setMinimumDate(self.test_min_date)
 
         # Checks to see if editing existing entry.
         if self.window_type == 'edit':
@@ -342,8 +339,8 @@ class InputWindow(QtWidgets.QDialog):
                                   self.date_finished_date_edit)
 
     def date_change(self):
-        """ Function that, when a date if changed, sets start and end date
-        accordingly."""
+        """ Function that, when a date is changed, sets minimum and max start
+        and end date accordingly."""
 
         try:
             self.start_date = self.date_started_date_edit.date()
@@ -356,7 +353,7 @@ class InputWindow(QtWidgets.QDialog):
 
 
     def confirm_entry(self):
-        """Creates a book entry and saves to JSON file"""
+        """Creates a book entry and saves to JSON file."""
 
         # If book or author fields empty, creates alert dialogue window and
         # stops entry from being saved.
@@ -431,7 +428,7 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication([])
     app.setApplicationDisplayName('BookBrain')
     main_window = MainWindow()
-    #app.setStyle('Fusion')
+
     try:
         with open(entries_file) as f:
             entries = json.load(f)
