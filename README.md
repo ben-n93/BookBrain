@@ -1,6 +1,6 @@
 # Book Brain
 
-> A reading journal for keeping track of the books you've read.
+A reading journal for keeping track of the books you've read:
 
 ![book_brain](https://user-images.githubusercontent.com/84557025/149754398-6dd0a2d0-8e29-4d69-b0db-81968c29f897.gif)
 
