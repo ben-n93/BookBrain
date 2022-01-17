@@ -2,7 +2,23 @@
 
 > A reading journal for keeping track of the books you've read.
 
-<img width="752" alt="Screen Shot 2022-01-16 at 11 28 11 am" src="https://user-images.githubusercontent.com/84557025/149656277-8c7eaa63-6461-43ba-b7ec-3e259c0c2685.png">
+![book_brain](https://user-images.githubusercontent.com/84557025/149754398-6dd0a2d0-8e29-4d69-b0db-81968c29f897.gif)
+
+# Usage
+
+BookBrain has all the features of a simple CRUD application.
+
+You can update entries:
+
+![edit_entry](https://user-images.githubusercontent.com/84557025/149754602-4e833b00-a935-47c0-882d-042edf3f85fa.gif)
+
+Delete entries:
+
+![delete](https://user-images.githubusercontent.com/84557025/149754582-a7af104e-1f24-4eee-b5b5-0c76fae131bc.gif)
+
+And you don't just have to just add _read_ books - you can also specify if you're _currently_ reading a book:
+
+![currently_reading](https://user-images.githubusercontent.com/84557025/149755872-9b689195-f17c-48c7-bfaf-ac349b1e82d0.gif)
 
 ## Installation
 
@@ -40,8 +56,8 @@ $ cd data
 $ del IDS.json, user_data.json
 ```
 ## Planned features
-- [ ] Statistics on reading habits (e.g. pie chart of most read genres, etc)
-- [ ] Export data as an Excel or PDF document
+- [ ] Statistics on reading habits (e.g. pie chart of most read genres, average books read in a month, etc)
+- [ ] Export book entries data as an Excel or PDF document
 - [ ] UI refresh/update
 - [ ] Delete all entries button
 - [ ] Release of stand-alone executable
