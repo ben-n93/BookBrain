@@ -25,7 +25,7 @@ $ python3 book_brain.py
 
 ## Deleting user data
 
-Book entries are saved into a JSON file ('user_data.json') in the data folder. If, for some reason, you need to wipe all the book entries you can simply delete this file (**_not_** the folder), as well as the 'IDs.json' file. The program will still work on restart.
+Book entries are saved into a JSON file ('user_data.json') in the data folder. If, for some reason, you need to wipe all the book entries (and you want to do so without deleting every row) you can simply delete this file (**_not_** the folder), as well as the 'IDs.json' file. The program will still work on restart.
 
 You can delete all entries from the command line by issuing the following from the root directory of BookBrain:
 
@@ -43,4 +43,5 @@ $ del IDS.json, user_data.json
 - [ ] Statistics on reading habits (e.g. pie chart of most read genres, etc)
 - [ ] Export data as an Excel or PDF document
 - [ ] UI refresh/update
-- [ ] Delete all entries
+- [ ] Delete all entries button
+- [ ] Release of stand-alone executable
