@@ -27,15 +27,15 @@ Clone the code to your virtual enviroment:
 ``` python
 $ git clone https://github.com/ben-n93/BookBrain.git
 ```
-Install the required packages:
+Navigate into the BookBrain directory and install the required packages:
 
 ```python
+$ cd BookBrain
 $ pip3 install -r requirements.txt
 ```
 
-Navigate into the BookBrain directory and execute script:
+Execute script:
 ```python
-$ cd BookBrain
 $ python3 book_brain.py
 ```
 
