@@ -2,11 +2,16 @@
 # github.com/ben-n93
 
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import QDate, Qt, QObject
+from PyQt5.QtCore import QDate, Qt, QObject, QSize
+from PyQt5.QtGui import QIcon
+
+import qdarkstyle
 
 from datetime import date, datetime
 from copy import deepcopy
 import json
+
+import qrc_resources
 
 entry_ids = list(range(1, 10_001))
 
@@ -15,7 +20,7 @@ entries = {}
 entries_file = 'data/user_data.json'
 ids_file = 'data/IDs.json'
 
-genres = ['Biography', 'Comic', 'Crime', 'Detective', 'Fantasy',
+genres = ['-','Biography', 'Comic', 'Crime', 'Detective', 'Fantasy',
           'Graphic novel', 'Historical fiction', 'History', 'Horror',
           'Literary fiction', 'Magic realism', 'Memoir', 'Mystery', 'Poetry',
           'Romance', 'Science fiction', 'Self-help', 'Short stories',
@@ -27,27 +32,11 @@ class MainWindow(QtWidgets.QWidget):
         super().__init__()
         self.setWindowTitle('BookBrain')
         self.setMinimumHeight(450)
-        self.setMinimumWidth(645)
+        self.setMinimumWidth(650)
         self.layout = QtWidgets.QGridLayout()
         self.setLayout(self.layout)
-        # Headers for QTableWidget.
-        self.header_one = QtWidgets.QTableWidgetItem('ID:')
-        self.header_two = QtWidgets.QTableWidgetItem('Date started:')
-        self.header_three = QtWidgets.QTableWidgetItem('Date finished:')
-        self.header_four = QtWidgets.QTableWidgetItem('Book title:')
-        self.header_five = QtWidgets.QTableWidgetItem('Author:')
-        self.header_six = QtWidgets.QTableWidgetItem('Genre:')
-        self.header_seven = QtWidgets.QTableWidgetItem('Comments:')
         # Table widget.
         self.table = QtWidgets.QTableWidget(1, 7)
-        # Sets headers.
-        self.table.setHorizontalHeaderItem(0, self.header_one)
-        self.table.setHorizontalHeaderItem(1, self.header_two)
-        self.table.setHorizontalHeaderItem(2, self.header_three)
-        self.table.setHorizontalHeaderItem(3, self.header_four)
-        self.table.setHorizontalHeaderItem(4, self.header_five)
-        self.table.setHorizontalHeaderItem(5, self.header_six)
-        self.table.setHorizontalHeaderItem(6, self.header_seven)
         # Makes table uneditable.
         self.table.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
         # When user clicks on cell, entire row selected.
@@ -58,33 +47,116 @@ class MainWindow(QtWidgets.QWidget):
         self.add_book_button = QtWidgets.QPushButton('Add entry')
         self.edit_book_button = QtWidgets.QPushButton('Update entry')
         self.delete_book_button = QtWidgets.QPushButton('Delete entry')
+        # Tool bar
+        self.toolbar = QtWidgets.QToolBar()
+        # Tool buttons
+        self.add_tool = QtWidgets.QToolButton()
+        self.add_icon = QIcon(":add.svg")
+        self.add_tool.setIcon(self.add_icon)
+        self.add_tool.setToolTip('Add entry')
+        #self.add_tool.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+
+        self.edit_tool = QtWidgets.QToolButton()
+        self.edit_icon = QIcon(":edit.svg")
+        self.edit_tool.setIcon(self.edit_icon)
+        self.edit_tool.setToolTip('Edit entry')
+
+        self.delete_tool = QtWidgets.QToolButton()
+        self.delete_icon = QIcon(":delete.svg")
+        self.delete_tool.setIcon(self.delete_icon)
+        self.delete_tool.setToolTip('Delete entry')
+
+        self.filter_tool = QtWidgets.QToolButton()
+        self.filter_icon = QIcon(":filter.svg")
+        self.filter_tool.setIcon(self.filter_icon)
+        self.filter_tool.setToolTip('Date filter')
+
+        self.search_tool = QtWidgets.QToolButton()
+        self.search_icon = QIcon(":search.svg")
+        self.search_tool.setIcon(self.search_icon)
+        self.search_tool.setToolTip('Search')
+        self.search_tool.setCheckable(True)
+
+        self.filter_off_tool = QtWidgets.QToolButton()
+        self.filter_off_icon = QIcon(":filter_off.svg")
+        self.filter_off_tool.setIcon(self.filter_off_icon)
+        self.filter_off_tool.setToolTip('Turn filter off')
+
+        self.download_tool = QtWidgets.QToolButton()
+        self.download_icon = QIcon(":file_download.svg")
+        self.download_tool.setIcon(self.download_icon)
+        self.download_tool.setToolTip('Download as Excel spreadsheet')
+
+        # Adding to toolbar menu
+        self.toolbar.addWidget(self.add_tool)
+        self.toolbar.addWidget(self.edit_tool)
+        self.toolbar.addWidget(self.delete_tool)
+        self.toolbar.addSeparator()
+        self.toolbar.addWidget(self.filter_tool)
+        self.toolbar.addWidget(self.search_tool)
+        self.toolbar.addWidget(self.filter_off_tool)
+        self.toolbar.addSeparator()
+        self.toolbar.addWidget(self.download_tool)
+
+        #self.toolbar.setStyleSheet("QToolBar{spacing:10px;}")
+
+        self.toolbar.setStyleSheet("QToolButton{border: none; background-color: transparent;} QToolBar{border: none; background-color: transparent;}")
         # Adds widgets to main window grid layout.
-        self.layout.addWidget(self.table, 0, 0, 1, 0)
-        self.layout.addWidget(self.add_book_button, 1, 0)
-        self.layout.addWidget(self.edit_book_button, 1, 1)
-        self.layout.addWidget(self.delete_book_button, 1, 2)
+        self.layout.addWidget(self.toolbar,0,0,1,0)
+        self.layout.addWidget(self.table, 1, 0, 1, 0)
+        #self.layout.addWidget(self.add_book_button, 2, 0)
+        #self.layout.addWidget(self.edit_book_button, 2, 1)
+        #self.layout.addWidget(self.delete_book_button, 2, 2)
         # Sets default sorting to asending order of date finished.
         self.table.sortByColumn(2, Qt.AscendingOrder)
         # Sets column width of 'date finished column'. Needed to set because
         # values too small (due to date formatting default) to show column
         # header ('Date finished:') in full.
-        self.table.setColumnWidth(2, 100)
+        self.table.setColumnWidth(2, 120)
 
-        self.add_book_button.clicked.connect(self.show_input_window)
-        self.delete_book_button.clicked.connect(self.delete_entry)
-        self.edit_book_button.clicked.connect(self.show_edit_window)
+        self.entries_list = ''
 
+        self.add_tool.clicked.connect(self.show_input_window)
+        self.edit_tool.clicked.connect(self.show_edit_window)
+        self.delete_tool.clicked.connect(self.delete_entry)
+        self.search_tool.clicked.connect(self.show_search_window)
+        self.filter_off_tool.clicked.connect(self.clear_filter)
 
-    def table_population(self):
+    def table_population(self,entries_list):
         """Populates the table in the main window with book entries."""
+
+        self.table.clear()
+
+        # Headers for QTableWidget.
+        self.header_one = QtWidgets.QTableWidgetItem('ID:')
+        self.header_two = QtWidgets.QTableWidgetItem('Date started:')
+        self.header_three = QtWidgets.QTableWidgetItem('Date finished:')
+        self.header_four = QtWidgets.QTableWidgetItem('Book title:')
+        self.header_five = QtWidgets.QTableWidgetItem('Author:')
+        self.header_six = QtWidgets.QTableWidgetItem('Genre:')
+        self.header_seven = QtWidgets.QTableWidgetItem('Comments:')
+
+        # Sets headers.
+        self.table.setHorizontalHeaderItem(0, self.header_one)
+        self.table.setHorizontalHeaderItem(1, self.header_two)
+        self.table.setHorizontalHeaderItem(2, self.header_three)
+        self.table.setHorizontalHeaderItem(3, self.header_four)
+        self.table.setHorizontalHeaderItem(4, self.header_five)
+        self.table.setHorizontalHeaderItem(5, self.header_six)
+        self.table.setHorizontalHeaderItem(6, self.header_seven)
+
+        #print(f"Entries list : {entries_list}")
+
         # Disabled table sorting, so as not to mess with table items order.
         self.table.setSortingEnabled(False)
 
         entries_row_count = 0
-        for key in entries.keys():
+        for key in entries_list.keys():
             entries_row_count += 1
 
         self.table.setRowCount(entries_row_count)
+
+        self.table.verticalHeader().setVisible(False)
 
         temp_list = []
         fields_list = ['ID', 'date_started', 'date_finished', 'book_title',
@@ -95,7 +167,7 @@ class MainWindow(QtWidgets.QWidget):
         for field in fields_list:
             starting_row = 0
             temp_list = []
-            for entry_dictionary in entries.values():
+            for entry_dictionary in entries_list.values():
                 temp_list.append(entry_dictionary[field])
             for item in temp_list:
                 temp_item = QtWidgets.QTableWidgetItem(item)
@@ -113,16 +185,14 @@ class MainWindow(QtWidgets.QWidget):
                         temp_date_item = datetime.strptime(temp_item_text,
                             "%d %b %Y")
                         temp_item.setData(0, QDate(temp_date_item))
-                        # Centres date value horizontally and vertically.
-                        temp_item.setTextAlignment(Qt.AlignVCenter |
-                            Qt.AlignHCenter)
                     except ValueError:
                         pass
+                temp_item.setTextAlignment(Qt.AlignVCenter | Qt.AlignHCenter)
                 self.table.setItem(starting_row, column_count, temp_item)
                 starting_row += 1
             column_count += 1
 
-        if len(entries) == 0:
+        if len(entries_list) == 0:
             pass
         else:
             # Resizes all columns to fit contents, except for date finished and
@@ -140,9 +210,14 @@ class MainWindow(QtWidgets.QWidget):
         input_window = InputWindow('add')
         input_window.exec()
 
+    def show_search_window(self):
+        """ Displays the input window """
+        search_window = SearchWindow()
+        search_window.exec()
+
 
     def show_edit_window(self):
-        """Shows edit (input) window, if an entry/row is selected."""
+        """Shows update (input) window, if an entry/row is selected."""
         try:
             # Finds current row of user's current selection.
             self.current_row = self.table.currentRow()
@@ -153,11 +228,15 @@ class MainWindow(QtWidgets.QWidget):
             # Finds ID of selected row/entry.
             self.current_row_id = self.current_row_id.text()
 
-            input_window = InputWindow('edit', self.current_row_id)
+            input_window = InputWindow('update', self.current_row_id)
             input_window.exec()
 
         except AttributeError:
             pass
+
+    def clear_filter(self):
+        """ Populates main window table with book entries"""
+        self.table_population(entries)
 
 
     def delete_entry(self):
@@ -208,6 +287,91 @@ class MainWindow(QtWidgets.QWidget):
                     pass
 
 
+class SearchWindow(QtWidgets.QDialog):
+        """ Input window for searching through entries for book or author. """
+        def __init__(self):
+            super().__init__()
+            self.layout = QtWidgets.QFormLayout()
+            self.setLayout(self.layout)
+            self.setWindowTitle('Search')
+            self.book_label = QtWidgets.QLabel('Book:')
+            self.author_label = QtWidgets.QLabel('Author:')
+            self.genre_label = QtWidgets.QLabel('Genre:')
+            self.genre_combo_box = QtWidgets.QComboBox()
+            self.genre_combo_box.addItems(genres)
+            self.book_edit = QtWidgets.QLineEdit()
+            self.author_edit = QtWidgets.QLineEdit()
+            self.search_button = QtWidgets.QPushButton('Search')
+            self.layout.addRow(self.book_label,self.book_edit)
+            self.layout.addRow(self.author_label,self.author_edit)
+            self.layout.addRow(self.genre_label,self.genre_combo_box)
+            self.layout.addRow(self.search_button)
+
+            self.search_button.clicked.connect(self.search)
+
+
+        def search(self):
+            """ Searches for user input in entries dictionary and calls main
+            window table."""
+
+            self.temp_entries = {}
+
+            self.book_title = self.book_edit.text()
+            self.author_title = self.author_edit.text()
+
+            if self.book_title != '' and self.author_title == '' and\
+            self.genre_combo_box.currentText() == '-':
+                for dictionary in entries.values():
+                    if self.book_title in dictionary.values():
+                        self.temp_id = dictionary['ID']
+                        self.temp_entries[self.temp_id] = dictionary
+                        #print(f"Temp Entries: {self.temp_entries}")
+
+            elif self.book_title == '' and self.author_title != '' and\
+            self.genre_combo_box.currentText() == '-':
+                    for dictionary in entries.values():
+                        if self.author_title in dictionary.values():
+                            self.temp_id = dictionary['ID']
+                            self.temp_entries[self.temp_id] = dictionary
+                        #print(f"Temp Entries: {self.temp_entries}")
+
+            elif self.book_title != ''  and self.author_title != '' and\
+            self.genre_combo_box.currentText() == '-':
+                for dictionary in entries.values():
+                    if self.author_title in dictionary.values() and\
+                    self.book_title in dictionary.values():
+                        self.temp_id = dictionary['ID']
+                        self.temp_entries[self.temp_id] = dictionary
+
+            elif self.book_title == ''  and self.author_title == '' and\
+            self.genre_combo_box.currentText() != '-':
+                    for dictionary in entries.values():
+                        if self.genre_combo_box.currentText() in\
+                        dictionary.values():
+                            self.temp_id = dictionary['ID']
+                            self.temp_entries[self.temp_id] = dictionary
+
+            elif self.book_title != ''  and self.author_title != '' and\
+            self.genre_combo_box.currentText() != '-':
+                for dictionary in entries.values():
+                    if self.genre_combo_box.currentText() in\
+                    dictionary.values() and self.author_title\
+                    in dictionary.values() and self.book_title\
+                    in dictionary.values():
+                        self.temp_id = dictionary['ID']
+                        self.temp_entries[self.temp_id] = dictionary
+            else:
+                pass
+
+            if len(self.temp_entries) == 0:
+                pass
+            else:
+                main_window.table_population(self.temp_entries)
+
+            self.close()
+
+
+
 class InputWindow(QtWidgets.QDialog):
     """ Input window for adding/editing book entries. """
     def __init__(self, window_type, current_row_id=None):
@@ -224,10 +388,8 @@ class InputWindow(QtWidgets.QDialog):
         self.date_finished_label = QtWidgets.QLabel('Date finished:')
         self.comments_label = QtWidgets.QLabel('Comments:')
         self.currently_reading_label = QtWidgets.QLabel('Currently reading:')
-        self.want_to_read_label = QtWidgets.QLabel('Want to read:')
 
         self.currently_reading_check_box = QtWidgets.QCheckBox('')
-        self.want_to_read_check_box = QtWidgets.QCheckBox('')
 
         self.book_line_edit = QtWidgets.QLineEdit()
         self.author_line_edit = QtWidgets.QLineEdit()
@@ -258,8 +420,8 @@ class InputWindow(QtWidgets.QDialog):
         self.date_finished_date_edit.setDisplayFormat('d MMMM yyyy')
 
         # Checks to see if editing existing entry.
-        if self.window_type == 'edit':
-            self.setWindowTitle('Edit entry')
+        if self.window_type == 'update':
+            self.setWindowTitle('Update entry')
             # Creates a copy of selected row's entry dictionary. It finds this
             # by matching the row's ID to key in entries dictionary.
             self.temp_edit_dictionary = deepcopy(entries[self.current_row_id])
@@ -418,7 +580,7 @@ class InputWindow(QtWidgets.QDialog):
             self.comments_text_box.setPlainText('')
 
             # Refreshs table in main window.
-            main_window.table_population()
+            main_window.table_population(entries)
 
             # Closes input window.
             self.close()
@@ -428,6 +590,11 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication([])
     app.setApplicationDisplayName('BookBrain')
     main_window = MainWindow()
+    app.setAttribute(Qt.AA_UseHighDpiPixmaps)
+    #app.setStyle('Fusion')
+
+    style = qdarkstyle.load_stylesheet(palette=qdarkstyle.LightPalette)
+    app.setStyleSheet(style)
 
     try:
         with open(entries_file) as f:
@@ -441,7 +608,7 @@ if __name__ == "__main__":
     except FileNotFoundError:
         pass
 
-    main_window.table_population()
+    main_window.table_population(entries)
     main_window.show()
 
     app.exec()

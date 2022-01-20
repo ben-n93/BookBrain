@@ -1,0 +1,14 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file alias="add.svg">resources/add.svg</file>
+    <file alias="edit.svg">resources/edit.svg</file>
+    <file alias="delete.svg">resources/delete.svg</file>
+    <file alias="view.svg">resources/view.svg</file>
+    <file alias="filter.svg">resources/filter.svg</file>
+    <file alias="search.svg">resources/search.svg</file>
+    <file alias="file_download.svg">resources/file_download.svg</file>
+    <file alias="insights.svg">resources/insights.svg</file>
+    <file alias="delete_all.svg">resources/delete_all.svg</file>
+    <file alias="filter_off.svg">resources/filter_off.svg</file>
+</qresource>
+</RCC>

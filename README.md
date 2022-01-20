@@ -55,6 +55,15 @@ $ rm IDS.json user_data.json
 $ cd data
 $ del IDS.json, user_data.json
 ```
+
+## License
+
+Distributed under the GPL-3.0 License. See LICENSE.txt for more information.
+
+## Acknowledgement
+
+I sourced the toolbar icons from [Google's Material Design](https://fonts.google.com/icons).
+
 ## Planned features
 - [ ] Statistics on reading habits (e.g. pie chart of most read genres, average books read in a month, etc)
 - [ ] Export book entries data as an Excel or PDF document
