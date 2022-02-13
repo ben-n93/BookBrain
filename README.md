@@ -2,23 +2,22 @@
 
 A reading journal for keeping track of the books you've read:
 
-![book_brain](https://user-images.githubusercontent.com/84557025/149754398-6dd0a2d0-8e29-4d69-b0db-81968c29f897.gif)
+<img width="774" alt="Screen Shot 2022-02-13 at 6 47 29 pm" src="https://user-images.githubusercontent.com/84557025/153744069-d32cd624-a6f6-4ca4-aa96-fb79ad917345.png">
 
 # Usage
 
 BookBrain has all the features of a simple CRUD application.
 
-You can update entries:
+Adding a book:
 
-![edit_entry](https://user-images.githubusercontent.com/84557025/149754602-4e833b00-a935-47c0-882d-042edf3f85fa.gif)
+
+
+Updating an entry:
+
 
 Delete entries:
 
-![delete](https://user-images.githubusercontent.com/84557025/149754582-a7af104e-1f24-4eee-b5b5-0c76fae131bc.gif)
-
-And you don't just have to just add _read_ books - you can also specify if you're _currently_ reading a book:
-
-![currently_reading](https://user-images.githubusercontent.com/84557025/149755872-9b689195-f17c-48c7-bfaf-ac349b1e82d0.gif)
+And you don't just have to just add _read_ books - you can add books you're currently reading:
 
 ## Installation
 
