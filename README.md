@@ -1,4 +1,4 @@
-# Book Brain
+# BookBrain
 
 A reading journal for keeping track of the books you've read:
 
