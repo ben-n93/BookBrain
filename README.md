@@ -2,7 +2,7 @@
 
 A reading journal for keeping track of the books you've read:
 
-<img width="774" alt="Screen Shot 2022-02-13 at 6 47 29 pm" src="https://user-images.githubusercontent.com/84557025/153744069-d32cd624-a6f6-4ca4-aa96-fb79ad917345.png">
+<img width="779" alt="Screen Shot 2022-02-13 at 6 51 40 pm" src="https://user-images.githubusercontent.com/84557025/153744184-ddda6893-ae9a-4080-b93d-05c0c1c3ce96.png">
 
 # Usage
 
