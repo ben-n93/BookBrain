@@ -1,17 +1,15 @@
 # BookBrain
 # github.com/ben-n93
 
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import QDate, Qt, QObject, QSize
-from PyQt5.QtGui import QIcon
-
-import qdarkstyle
-
 from datetime import date, datetime
 from copy import deepcopy
 import json
-
 import qrc_resources
+
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import QDate, Qt, QObject, QSize
+from PyQt5.QtGui import QIcon
+import qdarkstyle
 
 entry_ids = list(range(1, 10_001))
 
@@ -20,7 +18,7 @@ entries = {}
 entries_file = 'data/user_data.json'
 ids_file = 'data/IDs.json'
 
-genres = ['-','Biography', 'Comic', 'Crime', 'Detective', 'Fantasy',
+genres = ['-', 'Biography', 'Comic', 'Crime', 'Detective', 'Fantasy',
           'Graphic novel', 'Historical fiction', 'History', 'Horror',
           'Literary fiction', 'Magic realism', 'Memoir', 'Mystery', 'Poetry',
           'Romance', 'Science fiction', 'Self-help', 'Short stories',
@@ -28,11 +26,12 @@ genres = ['-','Biography', 'Comic', 'Crime', 'Detective', 'Fantasy',
 
 
 class MainWindow(QtWidgets.QWidget):
+    """ Main window of BookBrain."""
     def __init__(self):
         super().__init__()
         self.setWindowTitle('BookBrain')
         self.setMinimumHeight(450)
-        self.setMinimumWidth(650)
+        self.setMinimumWidth(662)
         self.layout = QtWidgets.QGridLayout()
         self.setLayout(self.layout)
         # Table widget.
@@ -54,60 +53,53 @@ class MainWindow(QtWidgets.QWidget):
         self.add_icon = QIcon(":add.svg")
         self.add_tool.setIcon(self.add_icon)
         self.add_tool.setToolTip('Add entry')
-        #self.add_tool.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+        self.add_tool.setText('Add entry')
+        self.add_tool.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
 
         self.edit_tool = QtWidgets.QToolButton()
         self.edit_icon = QIcon(":edit.svg")
         self.edit_tool.setIcon(self.edit_icon)
         self.edit_tool.setToolTip('Edit entry')
+        self.edit_tool.setText('Edit entry')
+        self.edit_tool.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
 
         self.delete_tool = QtWidgets.QToolButton()
         self.delete_icon = QIcon(":delete.svg")
         self.delete_tool.setIcon(self.delete_icon)
         self.delete_tool.setToolTip('Delete entry')
-
-        self.filter_tool = QtWidgets.QToolButton()
-        self.filter_icon = QIcon(":filter.svg")
-        self.filter_tool.setIcon(self.filter_icon)
-        self.filter_tool.setToolTip('Date filter')
+        self.delete_tool.setText('Delete entry')
+        self.delete_tool.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
 
         self.search_tool = QtWidgets.QToolButton()
         self.search_icon = QIcon(":search.svg")
         self.search_tool.setIcon(self.search_icon)
-        self.search_tool.setToolTip('Search')
+        self.search_tool.setToolTip('Search filter')
         self.search_tool.setCheckable(True)
+        self.search_tool.setText('Search filter')
+        self.search_tool.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
 
         self.filter_off_tool = QtWidgets.QToolButton()
         self.filter_off_icon = QIcon(":filter_off.svg")
         self.filter_off_tool.setIcon(self.filter_off_icon)
         self.filter_off_tool.setToolTip('Turn filter off')
-
-        self.download_tool = QtWidgets.QToolButton()
-        self.download_icon = QIcon(":file_download.svg")
-        self.download_tool.setIcon(self.download_icon)
-        self.download_tool.setToolTip('Download as Excel spreadsheet')
+        self.filter_off_tool.setText('Turn filter off')
+        self.filter_off_tool.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
 
         # Adding to toolbar menu
         self.toolbar.addWidget(self.add_tool)
         self.toolbar.addWidget(self.edit_tool)
         self.toolbar.addWidget(self.delete_tool)
         self.toolbar.addSeparator()
-        self.toolbar.addWidget(self.filter_tool)
         self.toolbar.addWidget(self.search_tool)
         self.toolbar.addWidget(self.filter_off_tool)
         self.toolbar.addSeparator()
-        self.toolbar.addWidget(self.download_tool)
 
-        #self.toolbar.setStyleSheet("QToolBar{spacing:10px;}")
-
-        self.toolbar.setStyleSheet("QToolButton{border: none; background-color: transparent;} QToolBar{border: none; background-color: transparent;}")
+        self.toolbar.setStyleSheet("QToolButton{border: none; background-color\
+            : transparent;} QToolBar{border: none; background-color:\
+             transparent;}")
         # Adds widgets to main window grid layout.
-        self.layout.addWidget(self.toolbar,0,0,1,0)
+        self.layout.addWidget(self.toolbar, 0, 0, 1, 0)
         self.layout.addWidget(self.table, 1, 0, 1, 0)
-        #self.layout.addWidget(self.add_book_button, 2, 0)
-        #self.layout.addWidget(self.edit_book_button, 2, 1)
-        #self.layout.addWidget(self.delete_book_button, 2, 2)
-        # Sets default sorting to asending order of date finished.
         self.table.sortByColumn(2, Qt.AscendingOrder)
         # Sets column width of 'date finished column'. Needed to set because
         # values too small (due to date formatting default) to show column
@@ -122,7 +114,7 @@ class MainWindow(QtWidgets.QWidget):
         self.search_tool.clicked.connect(self.show_search_window)
         self.filter_off_tool.clicked.connect(self.clear_filter)
 
-    def table_population(self,entries_list):
+    def table_population(self, entries_list):
         """Populates the table in the main window with book entries."""
 
         self.table.clear()
@@ -145,8 +137,6 @@ class MainWindow(QtWidgets.QWidget):
         self.table.setHorizontalHeaderItem(5, self.header_six)
         self.table.setHorizontalHeaderItem(6, self.header_seven)
 
-        #print(f"Entries list : {entries_list}")
-
         # Disabled table sorting, so as not to mess with table items order.
         self.table.setSortingEnabled(False)
 
@@ -160,7 +150,7 @@ class MainWindow(QtWidgets.QWidget):
 
         temp_list = []
         fields_list = ['ID', 'date_started', 'date_finished', 'book_title',
-        'author_title', 'genre', 'comments']
+                       'author_title', 'genre', 'comments']
 
         column_count = 0
 
@@ -183,7 +173,7 @@ class MainWindow(QtWidgets.QWidget):
                     # being added to dictionary.
                     try:
                         temp_date_item = datetime.strptime(temp_item_text,
-                            "%d %b %Y")
+                                                           "%d %b %Y")
                         temp_item.setData(0, QDate(temp_date_item))
                     except ValueError:
                         pass
@@ -204,17 +194,20 @@ class MainWindow(QtWidgets.QWidget):
 
         self.table.setSortingEnabled(True)
 
-
     def show_input_window(self):
-        """ Displays the input window """
+        """ Displays the input window. """
         input_window = InputWindow('add')
         input_window.exec()
 
     def show_search_window(self):
-        """ Displays the input window """
+        """ Displays the input window. """
         search_window = SearchWindow()
         search_window.exec()
 
+    def show_date_search_window(self):
+        """ Displays the input window."""
+        date_search_window = DateSearchWindow()
+        date_search_window.exec()
 
     def show_edit_window(self):
         """Shows update (input) window, if an entry/row is selected."""
@@ -235,14 +228,13 @@ class MainWindow(QtWidgets.QWidget):
             pass
 
     def clear_filter(self):
-        """ Populates main window table with book entries"""
+        """ Populates main window table with book entries."""
         self.table_population(entries)
-
 
     def delete_entry(self):
         """ Deletes book entry/dictionary from main window table and rewrites
-        JSON file with revised entries dictionary"""
-
+        JSON file with revised entries dictionary.
+        """
         # Checks to ensure there is actually an entry present to be deleted.
         if self.table.currentRow() < 0:
             pass
@@ -251,7 +243,8 @@ class MainWindow(QtWidgets.QWidget):
             self.delete_alert.setStandardButtons(QtWidgets.QMessageBox.Yes |
                                         QtWidgets.QMessageBox.Cancel)
             self.delete_alert.setIcon(QtWidgets.QMessageBox.Question)
-            self.delete_alert.setText("Are you sure you want to delete this entry?")
+            self.delete_alert.setText("Are you sure you want to delete this \
+                entry?")
             returnValue = self.delete_alert.exec()
 
             if returnValue == QtWidgets.QMessageBox.Yes:
@@ -288,92 +281,89 @@ class MainWindow(QtWidgets.QWidget):
 
 
 class SearchWindow(QtWidgets.QDialog):
-        """ Input window for searching through entries for book or author. """
-        def __init__(self):
-            super().__init__()
-            self.layout = QtWidgets.QFormLayout()
-            self.setLayout(self.layout)
-            self.setWindowTitle('Search')
-            self.book_label = QtWidgets.QLabel('Book:')
-            self.author_label = QtWidgets.QLabel('Author:')
-            self.genre_label = QtWidgets.QLabel('Genre:')
-            self.genre_combo_box = QtWidgets.QComboBox()
-            self.genre_combo_box.addItems(genres)
-            self.book_edit = QtWidgets.QLineEdit()
-            self.author_edit = QtWidgets.QLineEdit()
-            self.search_button = QtWidgets.QPushButton('Search')
-            self.layout.addRow(self.book_label,self.book_edit)
-            self.layout.addRow(self.author_label,self.author_edit)
-            self.layout.addRow(self.genre_label,self.genre_combo_box)
-            self.layout.addRow(self.search_button)
+    """ Input window for searching through entries for book or author."""
+    def __init__(self):
+        super().__init__()
+        self.layout = QtWidgets.QFormLayout()
+        self.setLayout(self.layout)
+        self.setWindowTitle('Search')
+        self.book_label = QtWidgets.QLabel('Book:')
+        self.author_label = QtWidgets.QLabel('Author:')
+        self.genre_label = QtWidgets.QLabel('Genre:')
+        self.genre_combo_box = QtWidgets.QComboBox()
+        self.genre_combo_box.addItems(genres)
+        self.book_edit = QtWidgets.QLineEdit()
+        self.author_edit = QtWidgets.QLineEdit()
+        self.search_button = QtWidgets.QPushButton('Search')
+        self.layout.addRow(self.book_label, self.book_edit)
+        self.layout.addRow(self.author_label, self.author_edit)
+        self.layout.addRow(self.genre_label, self.genre_combo_box)
+        self.layout.addRow(self.search_button)
 
-            self.search_button.clicked.connect(self.search)
+        self.search_button.clicked.connect(self.search)
 
+    def search(self):
+        """ Searches for user input in entries dictionary and calls main
+        window table.
+        """
 
-        def search(self):
-            """ Searches for user input in entries dictionary and calls main
-            window table."""
+        self.temp_entries = {}
 
-            self.temp_entries = {}
+        self.book_title = self.book_edit.text()
+        self.author_title = self.author_edit.text()
 
-            self.book_title = self.book_edit.text()
-            self.author_title = self.author_edit.text()
+        if self.book_title != '' and self.author_title == '' and\
+        self.genre_combo_box.currentText() == '-':
+            for dictionary in entries.values():
+                if self.book_title in dictionary.values():
+                    self.temp_id = dictionary['ID']
+                    self.temp_entries[self.temp_id] = dictionary
 
-            if self.book_title != '' and self.author_title == '' and\
-            self.genre_combo_box.currentText() == '-':
-                for dictionary in entries.values():
-                    if self.book_title in dictionary.values():
-                        self.temp_id = dictionary['ID']
-                        self.temp_entries[self.temp_id] = dictionary
-                        #print(f"Temp Entries: {self.temp_entries}")
+        elif self.book_title == '' and self.author_title != '' and\
+        self.genre_combo_box.currentText() == '-':
+            for dictionary in entries.values():
+                if self.author_title in dictionary.values():
+                    self.temp_id = dictionary['ID']
+                    self.temp_entries[self.temp_id] = dictionary
 
-            elif self.book_title == '' and self.author_title != '' and\
-            self.genre_combo_box.currentText() == '-':
-                    for dictionary in entries.values():
-                        if self.author_title in dictionary.values():
-                            self.temp_id = dictionary['ID']
-                            self.temp_entries[self.temp_id] = dictionary
-                        #print(f"Temp Entries: {self.temp_entries}")
+        elif self.book_title != '' and self.author_title != '' and\
+        self.genre_combo_box.currentText() == '-':
+            for dictionary in entries.values():
+                if self.author_title in dictionary.values() and\
+                self.book_title in dictionary.values():
+                    self.temp_id = dictionary['ID']
+                    self.temp_entries[self.temp_id] = dictionary
 
-            elif self.book_title != ''  and self.author_title != '' and\
-            self.genre_combo_box.currentText() == '-':
-                for dictionary in entries.values():
-                    if self.author_title in dictionary.values() and\
-                    self.book_title in dictionary.values():
-                        self.temp_id = dictionary['ID']
-                        self.temp_entries[self.temp_id] = dictionary
+        elif self.book_title == '' and self.author_title == '' and\
+        self.genre_combo_box.currentText() != '-':
+            for dictionary in entries.values():
+                if self.genre_combo_box.currentText() in\
+                dictionary.values():
+                    self.temp_id = dictionary['ID']
+                    self.temp_entries[self.temp_id] = dictionary
 
-            elif self.book_title == ''  and self.author_title == '' and\
-            self.genre_combo_box.currentText() != '-':
-                    for dictionary in entries.values():
-                        if self.genre_combo_box.currentText() in\
-                        dictionary.values():
-                            self.temp_id = dictionary['ID']
-                            self.temp_entries[self.temp_id] = dictionary
+        elif self.book_title != '' and self.author_title != '' and\
+        self.genre_combo_box.currentText() != '-':
+            for dictionary in entries.values():
+                if self.genre_combo_box.currentText() in\
+                dictionary.values() and self.author_title\
+                in dictionary.values() and self.book_title\
+                in dictionary.values():
+                    self.temp_id = dictionary['ID']
+                    self.temp_entries[self.temp_id] = dictionary
+        else:
+            pass
 
-            elif self.book_title != ''  and self.author_title != '' and\
-            self.genre_combo_box.currentText() != '-':
-                for dictionary in entries.values():
-                    if self.genre_combo_box.currentText() in\
-                    dictionary.values() and self.author_title\
-                    in dictionary.values() and self.book_title\
-                    in dictionary.values():
-                        self.temp_id = dictionary['ID']
-                        self.temp_entries[self.temp_id] = dictionary
-            else:
-                pass
+        if len(self.temp_entries) == 0:
+            pass
+        else:
+            main_window.table_population(self.temp_entries)
 
-            if len(self.temp_entries) == 0:
-                pass
-            else:
-                main_window.table_population(self.temp_entries)
-
-            self.close()
-
+        self.close()
 
 
 class InputWindow(QtWidgets.QDialog):
-    """ Input window for adding/editing book entries. """
+    """ Input window for adding/editing book entries."""
     def __init__(self, window_type, current_row_id=None):
         super().__init__()
         self.window_type = window_type
@@ -483,14 +473,14 @@ class InputWindow(QtWidgets.QDialog):
         self.confirm_button.clicked.connect(self.confirm_entry)
         self.currently_reading_check_box.toggled.connect(self.toggle_box)
 
-
     def toggle_box(self):
         """ If toggle box is checked, date finished QEdit/field is removed
         from layout. If, AFTER being checked, toggle box is unchecked,
-        date finished field is added to layout, in correct row position."""
+        date finished field is added to layout, in correct row position.
+        """
 
         if self.currently_reading_check_box.isChecked():
-                self.layout.removeRow(self.date_finished_date_edit)
+            self.layout.removeRow(self.date_finished_date_edit)
         else:
             self.date_finished_label = QtWidgets.QLabel('Date finished:')
             self.date_finished_date_edit = QtWidgets.QDateEdit()
@@ -502,7 +492,8 @@ class InputWindow(QtWidgets.QDialog):
 
     def date_change(self):
         """ Function that, when a date is changed, sets minimum and max start
-        and end date accordingly."""
+        and end date accordingly.
+        """
 
         try:
             self.start_date = self.date_started_date_edit.date()
@@ -513,13 +504,12 @@ class InputWindow(QtWidgets.QDialog):
         except RuntimeError:
             pass
 
-
     def confirm_entry(self):
         """Creates a book entry and saves to JSON file."""
 
         # If book or author fields empty, creates alert dialogue window and
         # stops entry from being saved.
-        if  self.book_line_edit.text() == '' or self.author_line_edit.text() \
+        if self.book_line_edit.text() == '' or self.author_line_edit.text() \
         == '':
             self.empty_alert = QtWidgets.QMessageBox()
             self.empty_alert.setIcon(QtWidgets.QMessageBox.Warning)
@@ -591,7 +581,6 @@ if __name__ == "__main__":
     app.setApplicationDisplayName('BookBrain')
     main_window = MainWindow()
     app.setAttribute(Qt.AA_UseHighDpiPixmaps)
-    #app.setStyle('Fusion')
 
     style = qdarkstyle.load_stylesheet(palette=qdarkstyle.LightPalette)
     app.setStyleSheet(style)
