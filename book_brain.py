@@ -31,7 +31,7 @@ class MainWindow(QtWidgets.QWidget):
         super().__init__()
         self.setWindowTitle('BookBrain')
         self.setMinimumHeight(450)
-        self.setMinimumWidth(662)
+        self.setMinimumWidth(667)
         self.layout = QtWidgets.QGridLayout()
         self.setLayout(self.layout)
         # Table widget.
@@ -204,11 +204,6 @@ class MainWindow(QtWidgets.QWidget):
         search_window = SearchWindow()
         search_window.exec()
 
-    def show_date_search_window(self):
-        """ Displays the input window."""
-        date_search_window = DateSearchWindow()
-        date_search_window.exec()
-
     def show_edit_window(self):
         """Shows update (input) window, if an entry/row is selected."""
         try:
@@ -240,6 +235,7 @@ class MainWindow(QtWidgets.QWidget):
             pass
         else:
             self.delete_alert = QtWidgets.QMessageBox()
+            self.delete_alert.setWindowTitle('Delete entry')
             self.delete_alert.setStandardButtons(QtWidgets.QMessageBox.Yes |
                                         QtWidgets.QMessageBox.Cancel)
             self.delete_alert.setIcon(QtWidgets.QMessageBox.Question)
@@ -512,6 +508,7 @@ class InputWindow(QtWidgets.QDialog):
         if self.book_line_edit.text() == '' or self.author_line_edit.text() \
         == '':
             self.empty_alert = QtWidgets.QMessageBox()
+            self.empty_alert.setWindowTitle('Warning')
             self.empty_alert.setIcon(QtWidgets.QMessageBox.Warning)
             self.empty_alert.setText("Book and author fields can't be empty.")
             self.empty_alert.exec()
