@@ -77,5 +77,4 @@ Style sheet: https://github.com/ColinDuquesnoy/QDarkStyleSheet
 ## Planned features
 - [ ] Statistics on reading habits (e.g. pie chart of most read genres, average books read in a month, etc)
 - [ ] Export book entries data as an Excel or PDF document
-- [ ] UI refresh/update
 - [ ] Release of stand-alone executable
